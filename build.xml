@@ -10,7 +10,7 @@
   </target>
 	
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task">
-		<jar jarfile="/Users/darrenh/libs/ant/jsdoctoolkit.jar" includes="*.class" basedir="." />
+		<jar jarfile="/Users/darrenh/libs/ant/jsdoctoolkit.jar" basedir="." />
 	</target>
   
 </project>
