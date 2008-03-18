@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="general" basedir="." name="jsdoc-toolkit">
+
+<echo message="pulling in property files"/>
+<property file="build.properties"/>
+	
+ <target name="general">
+ 	<antcall target="create-jar" />
+  </target>
+	
+	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task">
+		<jar jarfile="/Users/darrenh/libs/ant/jsdoctoolkit.jar" includes="*.class" basedir="." />
+	</target>
+  
+</project>
