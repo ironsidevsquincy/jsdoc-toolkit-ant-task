@@ -2,15 +2,32 @@
 
 <project default="general" basedir="." name="jsdoc-toolkit">
 
-<echo message="pulling in property files"/>
-<property file="build.properties"/>
-	
- <target name="general">
- 	<antcall target="create-jar" />
-  </target>
-	
-	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task">
-		<jar jarfile="/Users/darrenh/libs/ant/jsdoctoolkit.jar" basedir="." />
+	<echo message="pulling in property files" />
+	<property file="build.properties" />
+
+	<target name="general">
+		<antcall target="create-docs" />
+		<antcall target="create-jar" />
+        <antcall target="test-jar" />
 	</target>
-  
+
+	<target name="create-docs">
+		<javadoc sourcepath="src" destdir="javadoc"/>
+	</target>
+
+	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task">
+		<jar destfile="jsdoctoolkit.jar">
+		    <fileset dir="bin"/>
+		    <manifest>
+		      <attribute name="Built-By" value="Darren Hurley"/>
+		    </manifest>
+		</jar>
+	</target>
+	
+	<!-- test jar -->
+	<target name="test-jar">
+		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="jsdoctoolkit.jar:/Users/darrenh/libs/java/js.jar"/>
+		<jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}" inputdir="${basedir}/tests/jsdoctoolkit/" />
+	</target>
+
 </project>

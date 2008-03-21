@@ -22,6 +22,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.mozilla.javascript.tools.shell.Main;
 import java.util.Vector;
+//import JsRun;
 
 import uk.co.darrenhurley.ant.types.Source;
 
@@ -44,6 +45,7 @@ public class JsDocToolkit extends Task {
     	// create the array of commands to pass to rhino
     	String[] cmdArray = createCMDArray();
     	// call the rhino javascript engine
+    	System.out.println(cmdArray[1]);
     	Main.main(cmdArray);
     }
     
@@ -66,7 +68,7 @@ public class JsDocToolkit extends Task {
     private String[] createCMDArray() throws BuildException{
     	// return if certain attributes are not present
     	if((this.jsDocHome == null) || (this.template == null) || (this.outputDir == null)){
-    		throw new BuildException("jsodchome, template and outputdir are all compulsory attributes");
+    		throw new BuildException("jsdochome, template and outputdir are all compulsory attributes");
     	}
     	// set command parameters
     	Vector<String> cmdVector = new Vector<String>();
@@ -122,7 +124,8 @@ public class JsDocToolkit extends Task {
     	else{
     		throw new BuildException("You must specify a inputdir attribute or source child element(s)");
     	}
-    	//cmdVector.add(this.inputDir);
+    	// append -j argument, so it works with version 2
+    	cmdVector.add("-j=" + this.jsDocHome + "app/run.js");
     	return cmdVector.toArray(new String[0]);
     	
     }
