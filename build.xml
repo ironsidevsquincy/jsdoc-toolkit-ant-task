@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="general" basedir="." name="jsdoc-toolkit">
+<project default="build-complete" basedir="." name="jsdoc-toolkit">
 
 	<echo message="pulling in property files" />
 	<property file="build.properties" />
-
-	<target name="general">
-		<antcall target="create-docs" />
-		<antcall target="create-jar" />
-        <antcall target="test-jar" />
+    
+    <target name="build-compile" depends="compile, create-docs" />
+	<target name="build-jar" depends="create-jar, test-jar" />
+	<target name="build-complete" depends="compile, create-docs, create-jar, test-jar" />
+	
+	<target name="compile" description="Compile source files">
+        <javac 
+         srcdir="src" destdir="bin"
+         classpath="libs/java/ant.jar:/Users/darrenh/tmp/js.jar"
+        />
 	</target>
 
 	<target name="create-docs">
@@ -26,8 +31,18 @@
 	
 	<!-- test jar -->
 	<target name="test-jar">
-		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="jsdoctoolkit.jar:/Users/darrenh/libs/java/js.jar"/>
-		<jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}" inputdir="${basedir}/tests/jsdoctoolkit/" />
+		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="jsdoctoolkit.jar:libs/java/js.jar"/>
+        <!-- test it works with version 1 -->
+        <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
+        <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testtwo/">
+            <source file="${basedir}/tests/jsdoctoolkit/test.js" />
+        </jsdoctoolkit>
+		<!-- test it works with version 2 -->
+		<jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
+        <jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testtwo/">
+            <source file="${basedir}/tests/jsdoctoolkit/test.js" />
+        </jsdoctoolkit> 
 	</target>
+	
 
 </project>
