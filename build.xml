@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build-complete" basedir="." name="jsdoc-toolkit">
+<project default="build-all" basedir="." name="jsdoc-toolkit">
 
-	<echo message="pulling in property files" />
-	<property file="build.properties" />
-    
-    <target name="build-compile" depends="compile, create-docs" />
-	<target name="build-jar" depends="create-jar, test-jar" />
-	<target name="build-complete" depends="compile, create-docs, create-jar, test-jar" />
+    <target name="build-compile" depends="compile" />
+	<target name="build-jar" depends="create-jar" />
+	<target name="build-all" depends="test-jar, create-docs" />
 	
-	<target name="compile" description="Compile source files">
+    <target name="init">
+        <!-- import the propertycopy task -->
+        
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="libs/ant/ant-contrib-1.0b3.jar" />
+    	<echo message="pulling in property files" />
+	    <property file="build.properties" />
+        <!-- test what os we're running on -->
+        <condition property="current.os" value="mac" else="pc">
+            <os family="mac" />
+        </condition>
+        <!-- 'dereference' properties -->
+        <propertycopy name="jsdoc-1.home" from="jsdoc-1.home.${current.os}" />
+        <propertycopy name="jsdoc-2.home" from="jsdoc-2.home.${current.os}" />
+        <propertycopy name="test.output.dir" from="test.output.dir.${current.os}" />
+    </target>
+    
+	<target name="compile" description="Compile source files" depends="init">
         <javac 
          srcdir="src" destdir="bin"
          classpath="libs/java/ant.jar:/Users/darrenh/tmp/js.jar"
@@ -20,7 +33,7 @@
 		<javadoc sourcepath="src" destdir="javadoc"/>
 	</target>
 
-	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task">
+	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
 		<jar destfile="jsdoctoolkit.jar">
 		    <fileset dir="bin"/>
 		    <manifest>
@@ -30,7 +43,7 @@
 	</target>
 	
 	<!-- test jar -->
-	<target name="test-jar">
+	<target name="test-jar" depends="create-jar">
 		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="jsdoctoolkit.jar:libs/java/js.jar"/>
         <!-- test it works with version 1 -->
         <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
