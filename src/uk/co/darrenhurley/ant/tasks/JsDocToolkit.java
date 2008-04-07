@@ -49,23 +49,6 @@ public class JsDocToolkit extends Task {
 		// call the rhino javascript engine
 		Main.main(cmdArray);
 		AccessFileList.clearFileList();
-		/*JarClassLoader jarLoader = new JarClassLoader("/Users/darrenh/libs/java/js.jar");
-		try {
-			Class rhinoMain = jarLoader.loadClass("org.mozilla.javascript.tools.shell.Main", true);
-			System.out.println(rhinoMain.toString());
-			Object o = rhinoMain.newInstance();
-			if(o instanceof Main){
-				System.out.println("helo");
-				Main rhinoEngine = (Main) o;
-				rhinoEngine.main(cmdArray);
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}*/
 	}
 
 	/**
