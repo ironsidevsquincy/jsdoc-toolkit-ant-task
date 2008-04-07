@@ -25,17 +25,17 @@
 	<target name="compile" description="Compile source files" depends="init">
         <javac 
          srcdir="src" destdir="bin"
-         classpath="libs/java/ant.jar:/Users/darrenh/tmp/js.jar"
+         classpath="libs/java/js.jar"
         />
 	</target>
 
 	<target name="create-docs">
-		<javadoc sourcepath="src" destdir="javadoc"/>
+		<javadoc sourcepath="src" destdir="javadoc" classpath="libs/java/js.jar:libs/ant/ant.jar" />
 	</target>
 
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
 		<jar destfile="jsdoctoolkit.jar">
-		    <fileset dir="bin"/>
+		    <fileset dir="bin" />
 		    <manifest>
 		      <attribute name="Built-By" value="Darren Hurley"/>
 		    </manifest>
@@ -54,7 +54,7 @@
 		<jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
         <jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testtwo/">
             <source file="${basedir}/tests/jsdoctoolkit/test.js" />
-        </jsdoctoolkit> 
+        </jsdoctoolkit>
 	</target>
 	
 
