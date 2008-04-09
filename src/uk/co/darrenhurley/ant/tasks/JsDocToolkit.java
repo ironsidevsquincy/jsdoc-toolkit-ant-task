@@ -52,7 +52,7 @@ public class JsDocToolkit extends Task {
 	}
 
 	/**
-	 * Recieve a nested source from the ant task
+	 * Receive a nested source from the ant task
 	 * 
 	 * @param source
 	 *            a source object for the source nested element
@@ -159,7 +159,7 @@ public class JsDocToolkit extends Task {
 	 * Compulsory attribute outputdir, where to put the created docs.
 	 * 
 	 * @param outputDir
-	 *            a string of the path to where the genrated docs are placed
+	 *            a string of the path to where the generated docs are placed
 	 */
 	public void setOutputdir(String outputDir) {
 		this.outputDir = outputDir;
@@ -247,7 +247,7 @@ public class JsDocToolkit extends Task {
 	 * to js.
 	 * 
 	 * @param extensions
-	 *            a string of comma seperated extensions to include
+	 *            a string of comma separated extensions to include
 	 */
 	public void setExtensions(String extensions) {
 		this.extensions = extensions;
@@ -266,7 +266,7 @@ public class JsDocToolkit extends Task {
 	}
 
 	/**
-	 * Optioanl attribute log, a path to a log file
+	 * Optional attribute log, a path to a log file
 	 * 
 	 * @param log
 	 *            a string of the path to the log file
