@@ -30,7 +30,7 @@
 	</target>
 
 	<target name="create-docs">
-		<javadoc sourcepath="src" destdir="javadoc" classpath="libs/java/js.jar:libs/ant/ant.jar" />
+		<javadoc sourcepath="./src" destdir="./javadoc" classpath="libs/java/js.jar:libs/ant/ant.jar" />
 	</target>
 
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
