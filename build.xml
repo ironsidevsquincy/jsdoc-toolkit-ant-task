@@ -7,8 +7,7 @@
 	<target name="build-all" depends="test-jar, create-docs" />
 	
     <target name="init">
-        <!-- import the propertycopy task -->
-        
+        <!-- import the propertycopy task -->   
         <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="libs/ant/ant-contrib-1.0b3.jar" />
     	<echo message="pulling in property files" />
 	    <property file="build.properties" />
@@ -23,14 +22,8 @@
     </target>
     
 	<target name="compile" description="Compile source files" depends="init">
-        <javac 
-         srcdir="src" destdir="bin"
-         classpath="libs/java/js.jar"
-        />
-	</target>
-
-	<target name="create-docs">
-		<javadoc sourcepath="./src" destdir="./javadoc" classpath="libs/java/js.jar:libs/ant/ant.jar" />
+		<mkdir dir="bin" />
+        <javac srcdir="src" destdir="bin" classpath="libs/java/js.jar" />
 	</target>
 
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
@@ -44,6 +37,7 @@
 	
 	<!-- test jar -->
 	<target name="test-jar" depends="create-jar">
+		<mkdir dir="${test.output.dir}" />
 		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="jsdoctoolkit.jar:libs/java/js.jar"/>
         <!-- test it works with version 1 -->
         <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
@@ -56,6 +50,9 @@
             <source file="${basedir}/tests/jsdoctoolkit/test.js" />
         </jsdoctoolkit>
 	</target>
-	
+
+	<target name="create-docs">
+		<javadoc sourcepath="./src" destdir="./javadoc" classpath="libs/java/js.jar:libs/ant/ant.jar" />
+	</target>	
 
 </project>
