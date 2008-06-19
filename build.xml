@@ -23,7 +23,7 @@
     
 	<target name="compile" description="Compile source files" depends="init">
 		<mkdir dir="bin" />
-        <javac srcdir="src" destdir="bin" classpath="libs/java/js.jar" />
+        <javac srcdir="src" destdir="bin" classpath="libs/java/js.jar:libs/ant/ant.jar" />
 	</target>
 
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
