@@ -27,12 +27,13 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.DirectoryScanner;
 import java.io.*;
 
-import uk.co.darrenhurley.ant.types.Source;
+import uk.co.darrenhurley.ant.types.*;
 
 public class JsDocToolkit extends Task {
 
 	private String jsDocHome, template, outputDir;
 	private Vector<Source> sources = new Vector<Source>();
+	private Vector<Arg> args = new Vector<Arg>();
 	private Vector<FileSet> fileSets = new Vector<FileSet>();
 	// optional properties
 	private String encoding = "UTF-8", extensions = "js", config = "",
@@ -47,7 +48,7 @@ public class JsDocToolkit extends Task {
 	 */
 	public void execute() throws BuildException {
 		// set system property; the base dir
-		System.setProperty("jsdoc.dir", this.jsDocHome);
+		System.setProperty("jsdoc.dir", jsDocHome);
 		// create the array of commands to pass to rhino
 		String [] cmdArray = createCmdArray();
 		// call the rhino javascript engine
@@ -61,8 +62,20 @@ public class JsDocToolkit extends Task {
 	 * @param source a source object for the source nested element
 	 */
 	public void addSource(Source source) {
-		if (!this.sources.contains(source)) {
-			this.sources.add(source);
+		if (!sources.contains(source)) {
+			sources.add(source);
+		}
+	}
+	
+	/**
+	 * Receive a nested arg element from the ant task
+	 * 
+	 * @param arg An argument (name/value pair) to pass to the toolkit; it can be accessed
+	 * in JsDoc as JSDOC.opt.D.argName
+	 */
+	public void addArg(Arg arg) {
+		if (!args.contains(arg)) {
+			args.add(arg);
 		}
 	}
 	
@@ -72,8 +85,8 @@ public class JsDocToolkit extends Task {
 	 * @param fileSet Returned from the native FileSet element
 	 */
 	public void addFileSet(FileSet fileSet) {
-		if (!this.fileSets.contains(fileSet)) {
-			this.fileSets.add(fileSet);
+		if (!fileSets.contains(fileSet)) {
+			fileSets.add(fileSet);
 		}
 	}
 
@@ -83,53 +96,55 @@ public class JsDocToolkit extends Task {
 	 * @return a string[] of commands to pass to the rhino engine
 	 */
 	private String[] createCmdArray() throws BuildException {
-		// return if certain attributes are not present
-		if ((this.jsDocHome == null) || (this.template == null)
-				|| (this.outputDir == null)) {
-			throw new BuildException(
-					"jsdochome, template and outputdir are all compulsory attributes");
-		}
 		// set command parameters
 		Vector<String> cmdVector = new Vector<String>();
 		// the main jsodc js
-		cmdVector.add(this.jsDocHome + "app/run.js");
-		if (this.config != "") {
-			cmdVector.add("-c=" + this.config);
-			// cmdVector.add(this.inputDir);
+		cmdVector.add(jsDocHome + "app/run.js");
+		// if a config file is supplied, return without adding other parameters
+		if (config != "") {
+			cmdVector.add("-c=" + config);
+			// append -j argument, so it works with version 2
+			cmdVector.add("-j=" + jsDocHome + "app/run.js");
 			return cmdVector.toArray(new String[0]);
 		}
+		// return if certain attributes are not present
+		if ((jsDocHome == null) || (template == null)
+				|| (outputDir == null)) {
+			throw new BuildException(
+					"jsdochome, template and outputdir are all compulsory attributes");
+		}
 		// which template to use
-		cmdVector.add("-t=" + this.jsDocHome + "templates/" + this.template);
+		cmdVector.add("-t=" + jsDocHome + "templates/" + template);
 		// where to put the docs
-		cmdVector.add("-d=" + this.outputDir);
+		cmdVector.add("-d=" + outputDir);
 		// the encoding to use
-		cmdVector.add("-e=" + this.encoding);
+		cmdVector.add("-e=" + encoding);
 		// file extensions to use
-		cmdVector.add("-x=" + this.extensions);
-		if (this.isUndocumentedFunctions) {
+		cmdVector.add("-x=" + extensions);
+		if (isUndocumentedFunctions) {
 			cmdVector.add("-a");
 		}
-		if (this.isUnderscoredFunctions) {
+		if (isUnderscoredFunctions) {
 			cmdVector.add("-A");
 		}
-		if (this.isPrivate) {
+		if (isPrivate) {
 			cmdVector.add("-p");
 		}
-		if (this.isVerbose) {
+		if (isVerbose) {
 			cmdVector.add("-v");
 		}
-		if (this.log != "") {
+		if (log != "") {
 			cmdVector.add("-o=" + this.log);
 		}
-		if (this.inputDir != "") {
+		if (inputDir != "") {
 			// if recursion depth attribute not set, recurse all the way
-			if (this.depth == -1) {
+			if (depth == -1) {
 				cmdVector.add("-r");
 			} else {
 				cmdVector.add("-r=" + this.depth);
 			}
-			cmdVector.add(this.inputDir);
-		} else if (this.sources.size() != 0 || this.fileSets.size() != 0) {
+			cmdVector.add(inputDir);
+		} else if (sources.size() != 0 || fileSets.size() != 0) {
 			// Loop through sources
 			for (int i = 0; i < sources.size(); i++) {
 				// Get current source, and add it to the cmdVector
@@ -155,10 +170,15 @@ public class JsDocToolkit extends Task {
 
 		} else {
 			throw new BuildException(
-					"You must specify a inputdir attribute or source child element(s)");
+					"You must specify a inputdir attribute or source/fileset child element(s)");
+		}
+		if(args.size() != 0){
+			for(int i = 0; i < args.size(); i++){
+				cmdVector.add("-D=\"" + args.elementAt(i).getName() + ":" + args.elementAt(i).getValue() + "\"");
+			}
 		}
 		// append -j argument, so it works with version 2
-		cmdVector.add("-j=" + this.jsDocHome + "app/run.js");
+		cmdVector.add("-j=" + jsDocHome + "app/run.js");
 		return cmdVector.toArray(new String[0]);
 
 	}
