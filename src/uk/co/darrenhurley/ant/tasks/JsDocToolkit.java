@@ -23,6 +23,9 @@ import org.apache.tools.ant.BuildException;
 import org.mozilla.javascript.tools.shell.Main;
 import java.util.Vector;
 import org.mozilla.javascript.tools.shell.AccessFileList;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.DirectoryScanner;
+import java.io.*;
 
 import uk.co.darrenhurley.ant.types.Source;
 
@@ -30,6 +33,7 @@ public class JsDocToolkit extends Task {
 
 	private String jsDocHome, template, outputDir;
 	private Vector<Source> sources = new Vector<Source>();
+	private Vector<FileSet> fileSets = new Vector<FileSet>();
 	// optional properties
 	private String encoding = "UTF-8", extensions = "js", config = "",
 			log = "", inputDir = "";
@@ -45,7 +49,7 @@ public class JsDocToolkit extends Task {
 		// set system property; the base dir
 		System.setProperty("jsdoc.dir", this.jsDocHome);
 		// create the array of commands to pass to rhino
-		String [] cmdArray = createCMDArray();
+		String [] cmdArray = createCmdArray();
 		// call the rhino javascript engine
 		Main.main(cmdArray);
 		AccessFileList.clearFileList();
@@ -54,12 +58,22 @@ public class JsDocToolkit extends Task {
 	/**
 	 * Receive a nested source from the ant task
 	 * 
-	 * @param source
-	 *            a source object for the source nested element
+	 * @param source a source object for the source nested element
 	 */
 	public void addSource(Source source) {
 		if (!this.sources.contains(source)) {
 			this.sources.add(source);
+		}
+	}
+	
+	/**
+	 * Receive a nested source from the ant task
+	 * 
+	 * @param fileSet Returned from the native FileSet element
+	 */
+	public void addFileSet(FileSet fileSet) {
+		if (!this.fileSets.contains(fileSet)) {
+			this.fileSets.add(fileSet);
 		}
 	}
 
@@ -68,7 +82,7 @@ public class JsDocToolkit extends Task {
 	 * 
 	 * @return a string[] of commands to pass to the rhino engine
 	 */
-	private String[] createCMDArray() throws BuildException {
+	private String[] createCmdArray() throws BuildException {
 		// return if certain attributes are not present
 		if ((this.jsDocHome == null) || (this.template == null)
 				|| (this.outputDir == null)) {
@@ -84,7 +98,6 @@ public class JsDocToolkit extends Task {
 			// cmdVector.add(this.inputDir);
 			return cmdVector.toArray(new String[0]);
 		}
-
 		// which template to use
 		cmdVector.add("-t=" + this.jsDocHome + "templates/" + this.template);
 		// where to put the docs
@@ -116,11 +129,28 @@ public class JsDocToolkit extends Task {
 				cmdVector.add("-r=" + this.depth);
 			}
 			cmdVector.add(this.inputDir);
-		} else if (this.sources.size() != 0) {
+		} else if (this.sources.size() != 0 || this.fileSets.size() != 0) {
 			// Loop through sources
 			for (int i = 0; i < sources.size(); i++) {
 				// Get current source, and add it to the cmdVector
 				cmdVector.add(sources.elementAt(i).getFile());
+			}
+			// Loop through fileSets
+			for (int i = 0; i < fileSets.size(); i++) {
+				FileSet fs = fileSets.elementAt(i);
+				// Ummm....?
+                DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+                // Get base directory from fileset
+                File dir = ds.getBasedir();
+                // Get included files from fileset
+                String[] srcs = ds.getIncludedFiles();
+                // Loop through files
+                for (int j = 0; j < srcs.length; j++) {
+                	// Make file object from base directory and filename
+                    File temp = new File(dir,srcs[j]);
+                    // Call the JSMin class with this file
+                    cmdVector.add(temp.getAbsolutePath());
+                 }
 			}
 
 		} else {
