@@ -41,7 +41,8 @@ public class JsDocToolkit extends Task {
 	private int depth = -1;
 	private boolean isUnderscoredFunctions = false,
 			isUndocumentedFunctions = false, isPrivate = false,
-			isVerbose = false;
+			isVerbose = false,
+			isSuppressSourceOut = false;
 
 	/**
 	 * Method invoked by Ant to actually run the task
@@ -123,6 +124,9 @@ public class JsDocToolkit extends Task {
 		cmdVector.add("-x=" + extensions);
 		if (isUndocumentedFunctions) {
 			cmdVector.add("-a");
+		}
+		if (isSuppressSourceOut) {
+		  cmdVector.add("-s");
 		}
 		if (isUnderscoredFunctions) {
 			cmdVector.add("-A");
@@ -224,7 +228,7 @@ public class JsDocToolkit extends Task {
 	public void setInputdir(String inputDir) {
 		this.inputDir = inputDir;
 	}
-
+	
 	// optional attributes
 	/**
 	 * Optional attribute encoding, sets the encoding of the input and output
@@ -235,6 +239,20 @@ public class JsDocToolkit extends Task {
 	 */
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+
+  /**
+   * Optional choice to suppress the output of js source files.
+   * Defaults to 'false', otherwise known as allow JsDoc-toolkit links
+   * to raw js source.
+   *
+   * @param isSuppressSourceOut
+   *            a boolean value of whether to prevent the raw source
+   *            from being included with the documentation (true) or
+   *            allow it to be included (false, default).
+   */
+	public void setSuppresssourceout(Boolean isSuppressSourceOut) {
+	  this.isSuppressSourceOut = isSuppressSourceOut;
 	}
 
 	/**
