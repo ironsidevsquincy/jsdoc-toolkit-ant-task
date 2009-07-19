@@ -52,7 +52,7 @@
         <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testfour/" inputdir="${basedir}/tests/jsdoctoolkit/">
             <arg name="testName" value="testValue" />
         </jsdoctoolkit>
-		<delete dir="${test.output.dir}" />
+		<!--<delete dir="${test.output.dir}" />-->
 	</target>
 
 	<target name="create-docs" description="Create docs">
