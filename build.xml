@@ -15,8 +15,7 @@
             <os family="mac" />
         </condition>
         <!-- 'dereference' properties -->
-        <propertycopy name="jsdoc-1.home" from="jsdoc-1.home.${current.os}" />
-        <propertycopy name="jsdoc-2.home" from="jsdoc-2.home.${current.os}" />
+        <propertycopy name="jsdoc.home" from="jsdoc.home.${current.os}" />
         <propertycopy name="test.output.dir" from="test.output.dir.${current.os}" />
     </target>
     
@@ -26,7 +25,7 @@
 	</target>
 
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
-		<jar destfile="jsdoctoolkit.jar">
+		<jar destfile="${jar.name}">
 		    <fileset dir="bin" />
 		    <manifest>
 		      <attribute name="Built-By" value="Darren Hurley"/>
@@ -37,37 +36,23 @@
 	<!-- test jar -->
 	<target name="test-jar" depends="create-jar" description="Run some tests using our newly create JAR">
 		<mkdir dir="${test.output.dir}" />
-		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="jsdoctoolkit.jar:libs/java/js.jar"/>
-        <!-- test it works with version 1 -->
-		<!-- basic test -->
-        <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
-        <!-- nested source element test -->
-        <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testtwo/">
-            <source file="${basedir}/tests/jsdoctoolkit/test.js" />
-        </jsdoctoolkit>
-        <!-- nested fileset element test -->
-        <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testthree/">
-            <fileset file="${basedir}/tests/jsdoctoolkit/test.js" />
-        </jsdoctoolkit>
-		<!-- nested arg element test -->
-        <jsdoctoolkit jsdochome="${jsdoc-1.home}" template="sunny" outputdir="${test.output.dir}vesion1-testfour/" inputdir="${basedir}/tests/jsdoctoolkit/">
-        	<arg name="testName" value="testValue" />
-        </jsdoctoolkit>
-		<!-- test it works with version 2 -->
+		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:libs/java/js.jar"/>
+		<!-- test it works with -->
         <!-- basic test -->
-		<jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
+		<jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
         <!-- nested source element test -->
-        <jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testtwo/">
+        <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testtwo/">
             <source file="${basedir}/tests/jsdoctoolkit/test.js" />
         </jsdoctoolkit>
         <!-- nested fileset element test -->
-        <jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testthree/">
+        <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testthree/">
             <fileset file="${basedir}/tests/jsdoctoolkit/test.js" />
         </jsdoctoolkit>
         <!-- nested arg element test -->
-        <jsdoctoolkit jsdochome="${jsdoc-2.home}" template="jsdoc" outputdir="${test.output.dir}vesion2-testfour/" inputdir="${basedir}/tests/jsdoctoolkit/">
+        <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testfour/" inputdir="${basedir}/tests/jsdoctoolkit/">
             <arg name="testName" value="testValue" />
         </jsdoctoolkit>
+		<delete dir="${test.output.dir}" />
 	</target>
 
 	<target name="create-docs" description="Create docs">
