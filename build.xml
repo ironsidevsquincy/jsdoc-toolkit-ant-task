@@ -21,7 +21,7 @@
     
 	<target name="compile" description="Compile source files" depends="init">
 		<mkdir dir="bin" />
-        <javac srcdir="src" destdir="bin" classpath="libs/java/js-1.7r2.jar:libs/ant/ant.jar" />
+        <javac srcdir="src" destdir="bin" classpath="libs/java/js-${rhino.version}.jar:libs/ant/ant.jar" />
 	</target>
 
 	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
@@ -36,8 +36,8 @@
 	<!-- test jar -->
 	<target name="test-jar" depends="create-jar" description="Run some tests using our newly create JAR">
 		<mkdir dir="${test.output.dir}" />
-		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:libs/java/js-1.7r2.jar"/>
-		<!-- test it works with -->
+		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:libs/java/js-${rhino.version}.jar"/>
+		<!-- test it works -->
         <!-- basic test -->
 		<jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
         <!-- nested source element test -->
@@ -52,11 +52,10 @@
         <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testfour/" inputdir="${basedir}/tests/jsdoctoolkit/">
             <arg name="testName" value="testValue" />
         </jsdoctoolkit>
-		<!--<delete dir="${test.output.dir}" />-->
 	</target>
 
 	<target name="create-docs" description="Create docs">
-		<javadoc sourcepath="./src" destdir="./javadoc" classpath="libs/java/js-1.7r2.jar:libs/ant/ant.jar" />
+		<javadoc sourcepath="./src" destdir="./javadoc" classpath="libs/java/js-${rhino.version}.jar:libs/ant/ant.jar" />
 	</target>	
 
 </project>

@@ -9,8 +9,14 @@ package org.mozilla.javascript.tools.shell;
 
 import org.mozilla.javascript.tools.shell.Main;
 
-public class AccessFileList {
-	public static void clearFileList(){
-		Main.fileList.clear();		
+public class AccessFileList
+{
+	
+	public static void clearFileList()
+	{
+		
+		Main.fileList.clear();
+		
 	}
+	
 }

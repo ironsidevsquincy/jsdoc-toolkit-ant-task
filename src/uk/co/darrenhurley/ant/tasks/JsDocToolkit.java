@@ -18,14 +18,15 @@
 
 package uk.co.darrenhurley.ant.tasks;
 
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.BuildException;
-import org.mozilla.javascript.tools.shell.Main;
-import java.util.Vector;
-import org.mozilla.javascript.tools.shell.AccessFileList;
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.DirectoryScanner;
+
+import org.mozilla.javascript.tools.shell.Main;
+import org.mozilla.javascript.tools.shell.AccessFileList;
+
+import java.util.*;
 import java.io.*;
+import org.apache.tools.ant.DirectoryScanner;
 
 import uk.co.darrenhurley.ant.types.*;
 
@@ -53,8 +54,8 @@ public class JsDocToolkit extends Task {
 		// create the array of commands to pass to rhino
 		String [] cmdArray = createCmdArray();
 		// call the rhino javascript engine
-		Main.main(cmdArray);
 		AccessFileList.clearFileList();
+		Main.main(cmdArray);
 	}
 
 	/**
