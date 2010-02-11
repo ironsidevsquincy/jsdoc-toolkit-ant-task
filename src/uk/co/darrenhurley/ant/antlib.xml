@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<antlib>
+
+	<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" />
+
+</antlib>
