@@ -21,8 +21,7 @@ package uk.co.darrenhurley.ant.tasks;
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.FileSet;
 
-import org.mozilla.javascript.tools.shell.Main;
-import org.mozilla.javascript.tools.shell.AccessFileList;
+import org.mozilla.javascript.*;
 
 import java.util.*;
 import java.io.*;
@@ -54,8 +53,7 @@ public class JsDocToolkit extends Task {
 		// create the array of commands to pass to rhino
 		String [] cmdArray = createCmdArray();
 		// call the rhino javascript engine
-//		AccessFileList.clearFileList();
-		Main.main(cmdArray);
+		org.mozilla.javascript.tools.shell.Main.main(cmdArray);
 	}
 
 	/**

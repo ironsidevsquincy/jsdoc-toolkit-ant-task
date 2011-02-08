@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="package" basedir="." name="jsdoc-toolkit">
+<project default="integration-test" basedir="." name="jsdoc-toolkit">
 	
     <property file="build.properties" />
 	
@@ -13,11 +13,12 @@
     
 	<target name="compile" description="Compile source files" depends="init">
 		<mkdir dir="${bin.dir}" />
-        <javac srcdir="./src" destdir="${bin.dir}" classpath="${rhino.jar}:${lib.dir}/ant.jar" />
+        <javac srcdir="./src" destdir="${bin.dir}" classpath="${ant.jar.location}:${rhino.jar.location}" />
 	</target>
 
 	<target name="package" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
-		<jar destfile="${build.dir}/${jar.name}">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.location}">
 		    <fileset dir="${bin.dir}" />
 		    <manifest>
 		      <attribute name="Built-By" value="Darren Hurley"/>
@@ -33,35 +34,13 @@
 		<echo> * Ant: ${ant.version}r</echo>
 		<echo> * Rhino: ${rhino.version}</echo>
 		
-		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:${rhino.jar}"/>
+		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.location}:${rhino.jar.location}"/>
 		
         <!-- basic test -->
 		<jsdoctoolkit jsdochome="${jsdoc.home}" 
 					  template="jsdoc" 
 			          outputdir="${report.dir}/testone" 
 			          inputdir="${integration.test.dir}" />
-		
-        <!-- nested source element test -->
-        <jsdoctoolkit jsdochome="${jsdoc.home}" 
-        			  template="jsdoc" 
-        	  		  outputdir="${report.dir}/testone">
-            <source file="${integration.test.dir}" />
-        </jsdoctoolkit>
-		
-        <!-- nested fileset element test -->
-        <jsdoctoolkit jsdochome="${jsdoc.home}" 
-        			  template="jsdoc" 
-        			  outputdir="${report.dir}/testthree">
-            <fileset file="${integration.test.dir}" />
-        </jsdoctoolkit>
-		
-        <!-- nested arg element test -->
-        <jsdoctoolkit jsdochome="${jsdoc.home}" 
-        			  template="jsdoc" 
-        			  outputdir="${test.output.dir}testfour/" 
-        			  inputdir="${integration.test.dir}">
-            <arg name="testName" value="testValue" />
-        </jsdoctoolkit>
 		
 	</target>
 
