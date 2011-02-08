@@ -1,32 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project default="build-all" basedir="." name="jsdoc-toolkit">
-
-    <target name="build-compile" depends="compile" description="Just compile"/>
-	<target name="build-jar" depends="create-jar" description="Compile and create a JAR"/>
-	<target name="build-all" depends="test-jar, create-docs" description="Compile, create JAR, test the JAR and create docs"/>
+<project default="package" basedir="." name="jsdoc-toolkit">
 	
-    <target name="init" description="Do necessary init tasks">
-        <!-- import the propertycopy task -->   
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="libs/ant/ant-contrib-1.0b3.jar" />
-	    <property file="build.properties" />
-        <!-- test what os we're running on -->
-        <condition property="current.os" value="mac" else="pc">
-            <os family="mac" />
-        </condition>
-        <!-- 'dereference' properties -->
-        <propertycopy name="jsdoc.home" from="jsdoc.home.${current.os}" />
-        <propertycopy name="test.output.dir" from="test.output.dir.${current.os}" />
+    <property file="build.properties" />
+	
+	<target name="clean" description="Clean up">
+		<delete dir="${build.dir}" />
+	</target>
+	
+    <target name="init" description="Init tasks" depends="clean">
+    	<mkdir dir="${build.dir}" />
     </target>
     
 	<target name="compile" description="Compile source files" depends="init">
-		<mkdir dir="bin" />
-        <javac srcdir="src" destdir="bin" classpath="libs/java/js-${rhino.version}.jar:libs/ant/ant.jar" />
+		<mkdir dir="${bin.dir}" />
+        <javac srcdir="./src" destdir="${bin.dir}" classpath="${rhino.jar}:${lib.dir}/ant.jar" />
 	</target>
 
-	<target name="create-jar" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
-		<jar destfile="${jar.name}">
-		    <fileset dir="bin" />
+	<target name="package" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
+		<jar destfile="${build.dir}/${jar.name}">
+		    <fileset dir="${bin.dir}" />
 		    <manifest>
 		      <attribute name="Built-By" value="Darren Hurley"/>
 		    </manifest>
@@ -34,30 +26,43 @@
 	</target>
 	
 	<!-- test jar -->
-	<target name="test-jar" depends="create-jar" description="Run some tests using our newly create JAR">
+	<target name="integration-test" depends="package" description="Run some tests using our newly create JAR">
 		
 		<echo>Using:</echo>
 		<echo> * Java: ${ant.java.version}</echo>
 		<echo> * Ant: ${ant.version}r</echo>
 		<echo> * Rhino: ${rhino.version}</echo>
 		
-		<mkdir dir="${test.output.dir}" />
-		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:libs/java/js-${rhino.version}.jar"/>
-		<!-- test it works -->
+		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:${rhino.jar}"/>
+		
         <!-- basic test -->
-		<jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testone/" inputdir="${basedir}/tests/jsdoctoolkit/" />
+		<jsdoctoolkit jsdochome="${jsdoc.home}" 
+					  template="jsdoc" 
+			          outputdir="${report.dir}/testone" 
+			          inputdir="${integration.test.dir}" />
+		
         <!-- nested source element test -->
-        <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testtwo/">
-            <source file="${basedir}/tests/jsdoctoolkit/test.js" />
+        <jsdoctoolkit jsdochome="${jsdoc.home}" 
+        			  template="jsdoc" 
+        	  		  outputdir="${report.dir}/testone">
+            <source file="${integration.test.dir}" />
         </jsdoctoolkit>
+		
         <!-- nested fileset element test -->
-        <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testthree/">
-            <fileset file="${basedir}/tests/jsdoctoolkit/test.js" />
+        <jsdoctoolkit jsdochome="${jsdoc.home}" 
+        			  template="jsdoc" 
+        			  outputdir="${report.dir}/testthree">
+            <fileset file="${integration.test.dir}" />
         </jsdoctoolkit>
+		
         <!-- nested arg element test -->
-        <jsdoctoolkit jsdochome="${jsdoc.home}" template="jsdoc" outputdir="${test.output.dir}testfour/" inputdir="${basedir}/tests/jsdoctoolkit/">
+        <jsdoctoolkit jsdochome="${jsdoc.home}" 
+        			  template="jsdoc" 
+        			  outputdir="${test.output.dir}testfour/" 
+        			  inputdir="${integration.test.dir}">
             <arg name="testName" value="testValue" />
         </jsdoctoolkit>
+		
 	</target>
 
 	<target name="create-docs" description="Create docs">
