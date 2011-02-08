@@ -35,6 +35,12 @@
 	
 	<!-- test jar -->
 	<target name="test-jar" depends="create-jar" description="Run some tests using our newly create JAR">
+		
+		<echo>Using:</echo>
+		<echo> * Java: ${ant.java.version}</echo>
+		<echo> * Ant: ${ant.version}r</echo>
+		<echo> * Rhino: ${rhino.version}</echo>
+		
 		<mkdir dir="${test.output.dir}" />
 		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.name}:libs/java/js-${rhino.version}.jar"/>
 		<!-- test it works -->

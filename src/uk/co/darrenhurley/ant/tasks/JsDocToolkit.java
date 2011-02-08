@@ -54,7 +54,7 @@ public class JsDocToolkit extends Task {
 		// create the array of commands to pass to rhino
 		String [] cmdArray = createCmdArray();
 		// call the rhino javascript engine
-		AccessFileList.clearFileList();
+//		AccessFileList.clearFileList();
 		Main.main(cmdArray);
 	}
 
