@@ -20,14 +20,14 @@ package uk.co.darrenhurley.ant.tasks;
 
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.FileSet;
+import uk.co.darrenhurley.ant.types.*;
+import uk.co.darrenhurley.rhino.*;
 
-import org.mozilla.javascript.*;
 
 import java.util.*;
 import java.io.*;
-import org.apache.tools.ant.DirectoryScanner;
 
-import uk.co.darrenhurley.ant.types.*;
+import org.apache.tools.ant.DirectoryScanner;
 
 public class JsDocToolkit extends Task {
 
@@ -41,48 +41,51 @@ public class JsDocToolkit extends Task {
 	private int depth = -1;
 	private boolean isUnderscoredFunctions = false,
 			isUndocumentedFunctions = false, isPrivate = false,
-			isVerbose = false,
-			isSuppressSourceOut = false;
+			isVerbose = false, isSuppressSourceOut = false;
 
 	/**
 	 * Method invoked by Ant to actually run the task
 	 */
 	public void execute() throws BuildException {
-		// set system property; the base dir
-		System.setProperty("jsdoc.dir", jsDocHome);
 		// create the array of commands to pass to rhino
-		String [] cmdArray = createCmdArray();
-		// call the rhino javascript engine
-		org.mozilla.javascript.tools.shell.Main.main(cmdArray);
+		String[] cmdArray = createCmdArray();
+		try {
+			Shell.main(cmdArray);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Receive a nested source from the ant task
 	 * 
-	 * @param source a source object for the source nested element
+	 * @param source
+	 *            a source object for the source nested element
 	 */
 	public void addSource(Source source) {
 		if (!sources.contains(source)) {
 			sources.add(source);
 		}
 	}
-	
+
 	/**
 	 * Receive a nested arg element from the ant task
 	 * 
-	 * @param arg An argument (name/value pair) to pass to the toolkit; it can be accessed
-	 * in JsDoc as JSDOC.opt.D.argName
+	 * @param arg
+	 *            An argument (name/value pair) to pass to the toolkit; it can
+	 *            be accessed in JsDoc as JSDOC.opt.D.argName
 	 */
 	public void addArg(Arg arg) {
 		if (!args.contains(arg)) {
 			args.add(arg);
 		}
 	}
-	
+
 	/**
 	 * Receive a nested source from the ant task
 	 * 
-	 * @param fileSet Returned from the native FileSet element
+	 * @param fileSet
+	 *            Returned from the native FileSet element
 	 */
 	public void addFileSet(FileSet fileSet) {
 		if (!fileSets.contains(fileSet)) {
@@ -98,8 +101,11 @@ public class JsDocToolkit extends Task {
 	private String[] createCmdArray() throws BuildException {
 		// set command parameters
 		Vector<String> cmdVector = new Vector<String>();
-		// the main jsodc js
-		cmdVector.add(jsDocHome + "app/run.js");
+		// return if certain attributes are not present
+		if ((jsDocHome == null) || (template == null) || (outputDir == null)) {
+			throw new BuildException(
+					"jsdochome, template and outputdir are all compulsory attributes");
+		}
 		// if a config file is supplied, return without adding other parameters
 		if (config != "") {
 			cmdVector.add("-c=" + config);
@@ -107,12 +113,8 @@ public class JsDocToolkit extends Task {
 			cmdVector.add("-j=" + jsDocHome + "app/run.js");
 			return cmdVector.toArray(new String[0]);
 		}
-		// return if certain attributes are not present
-		if ((jsDocHome == null) || (template == null)
-				|| (outputDir == null)) {
-			throw new BuildException(
-					"jsdochome, template and outputdir are all compulsory attributes");
-		}
+		// the main jsodc js
+		cmdVector.add(jsDocHome + "app/run.js");
 		// which template to use
 		cmdVector.add("-t=" + jsDocHome + "templates/" + template);
 		// where to put the docs
@@ -125,7 +127,7 @@ public class JsDocToolkit extends Task {
 			cmdVector.add("-a");
 		}
 		if (isSuppressSourceOut) {
-		  cmdVector.add("-s");
+			cmdVector.add("-s");
 		}
 		if (isUnderscoredFunctions) {
 			cmdVector.add("-A");
@@ -157,27 +159,28 @@ public class JsDocToolkit extends Task {
 			for (int i = 0; i < fileSets.size(); i++) {
 				FileSet fs = fileSets.elementAt(i);
 				// Ummm....?
-                DirectoryScanner ds = fs.getDirectoryScanner(getProject());
-                // Get base directory from fileset
-                File dir = ds.getBasedir();
-                // Get included files from fileset
-                String[] srcs = ds.getIncludedFiles();
-                // Loop through files
-                for (int j = 0; j < srcs.length; j++) {
-                	// Make file object from base directory and filename
-                    File temp = new File(dir,srcs[j]);
-                    // Call the JSMin class with this file
-                    cmdVector.add(temp.getAbsolutePath());
-                 }
+				DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+				// Get base directory from fileset
+				File dir = ds.getBasedir();
+				// Get included files from fileset
+				String[] srcs = ds.getIncludedFiles();
+				// Loop through files
+				for (int j = 0; j < srcs.length; j++) {
+					// Make file object from base directory and filename
+					File temp = new File(dir, srcs[j]);
+					// Call the JSMin class with this file
+					cmdVector.add(temp.getAbsolutePath());
+				}
 			}
 
 		} else {
 			throw new BuildException(
 					"You must specify a inputdir attribute or source/fileset child element(s)");
 		}
-		if(args.size() != 0){
-			for(int i = 0; i < args.size(); i++){
-				cmdVector.add("-D=\"" + args.elementAt(i).getName() + ":" + args.elementAt(i).getValue() + "\"");
+		if (args.size() != 0) {
+			for (int i = 0; i < args.size(); i++) {
+				cmdVector.add("-D=\"" + args.elementAt(i).getName() + ":"
+						+ args.elementAt(i).getValue() + "\"");
 			}
 		}
 		// append -j argument, so it works with version 2
@@ -227,7 +230,7 @@ public class JsDocToolkit extends Task {
 	public void setInputdir(String inputDir) {
 		this.inputDir = inputDir;
 	}
-	
+
 	// optional attributes
 	/**
 	 * Optional attribute encoding, sets the encoding of the input and output
@@ -240,18 +243,17 @@ public class JsDocToolkit extends Task {
 		this.encoding = encoding;
 	}
 
-  /**
-   * Optional choice to suppress the output of js source files.
-   * Defaults to 'false', otherwise known as allow JsDoc-toolkit links
-   * to raw js source.
-   *
-   * @param isSuppressSourceOut
-   *            a boolean value of whether to prevent the raw source
-   *            from being included with the documentation (true) or
-   *            allow it to be included (false, default).
-   */
+	/**
+	 * Optional choice to suppress the output of js source files. Defaults to
+	 * 'false', otherwise known as allow JsDoc-toolkit links to raw js source.
+	 * 
+	 * @param isSuppressSourceOut
+	 *            a boolean value of whether to prevent the raw source from
+	 *            being included with the documentation (true) or allow it to be
+	 *            included (false, default).
+	 */
 	public void setSuppresssourceout(Boolean isSuppressSourceOut) {
-	  this.isSuppressSourceOut = isSuppressSourceOut;
+		this.isSuppressSourceOut = isSuppressSourceOut;
 	}
 
 	/**

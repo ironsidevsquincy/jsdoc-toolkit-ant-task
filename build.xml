@@ -13,11 +13,14 @@
     
 	<target name="compile" description="Compile source files" depends="init">
 		<mkdir dir="${bin.dir}" />
-        <javac srcdir="./src" destdir="${bin.dir}" classpath="${ant.jar.location}:${rhino.jar.location}" />
+        <javac srcdir="${src.dir}" destdir="${bin.dir}" classpath="${ant.jar.location}:${rhino.jar.location}" />
+	</target>
+	
+	<target name="javadoc" depends="clean, init">
+		<javadoc sourcepath="${src.dir}" destdir="${docs.dir}" classpath="${ant.jar.location}:${rhino.jar.location}" />
 	</target>
 
-	<target name="package" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile">
-		<mkdir dir="${jar.dir}" />
+	<target name="package" description="Create a JAR of the JsDoc Toolkit ant task" depends="compile, javadoc">
 		<jar destfile="${jar.location}">
 		    <fileset dir="${bin.dir}" />
 		    <manifest>
@@ -30,8 +33,8 @@
 	<target name="integration-test" depends="package" description="Run some tests using our newly create JAR">
 		
 		<echo>Using:</echo>
-		<echo> * Java: ${ant.java.version}</echo>
-		<echo> * Ant: ${ant.version}r</echo>
+		<echo> * Java:  ${ant.java.version}</echo>
+		<echo> * Ant:   ${ant.version}r</echo>
 		<echo> * Rhino: ${rhino.version}</echo>
 		
 		<taskdef name="jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="${jar.location}:${rhino.jar.location}"/>
@@ -42,10 +45,29 @@
 			          outputdir="${report.dir}/testone" 
 			          inputdir="${integration.test.dir}" />
 		
-	</target>
+		 <!-- nested source element test -->
+		<jsdoctoolkit jsdochome="${jsdoc.home}" 
+			          template="jsdoc" 
+			          outputdir="${report.dir}/testtwo">
+			  <source file="${integration.test.dir}" />
+		</jsdoctoolkit>
+		       
+		<!-- nested fileset element test -->
+		<jsdoctoolkit jsdochome="${jsdoc.home}" 
+			          template="jsdoc" 
+			          outputdir="${report.dir}/testthree">
+			  <fileset dir="${integration.test.dir}" />
+		</jsdoctoolkit>
+		       
+		<!-- nested arg element test -->
+		<jsdoctoolkit jsdochome="${jsdoc.home}" 
+			          template="jsdoc" 
+			          outputdir="${report.dir}/testfour/" 
+			          inputdir="${integration.test.dir}">
+            <arg name="testName" value="testValue" />
+		</jsdoctoolkit>
 
-	<target name="create-docs" description="Create docs">
-		<javadoc sourcepath="./src" destdir="./javadoc" classpath="libs/java/js-${rhino.version}.jar:libs/ant/ant.jar" />
-	</target>	
+
+	</target>
 
 </project>
