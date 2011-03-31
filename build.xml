@@ -67,6 +67,12 @@
             <arg name="testName" value="testValue" />
 		</jsdoctoolkit>
 
+		<!-- nested filelist element test -->
+		<jsdoctoolkit jsdochome="${jsdoc.home}" 
+			          template="jsdoc" 
+			          outputdir="${report.dir}/testfive">
+			  <filelist dir="${integration.test.dir}" files="test.js" />
+		</jsdoctoolkit>
 
 	</target>
 
