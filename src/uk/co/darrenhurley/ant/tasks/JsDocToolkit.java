@@ -20,6 +20,7 @@ package uk.co.darrenhurley.ant.tasks;
 
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FileList;
 import uk.co.darrenhurley.ant.types.*;
 import uk.co.darrenhurley.rhino.*;
 
@@ -35,6 +36,7 @@ public class JsDocToolkit extends Task {
 	private Vector<Source> sources = new Vector<Source>();
 	private Vector<Arg> args = new Vector<Arg>();
 	private Vector<FileSet> fileSets = new Vector<FileSet>();
+	private Vector<FileList> fileLists = new Vector<FileList>();
 	// optional properties
 	private String encoding = "UTF-8", extensions = "js", config = "",
 			log = "", inputDir = "";
@@ -94,6 +96,18 @@ public class JsDocToolkit extends Task {
 	}
 
 	/**
+	 * Receive a nested FileList source from the ant task
+	 * 
+	 * @param fileList
+	 *            Returned from the native FileList element
+	 */
+	public void addFileList(FileList fileList) {
+		if (!fileLists.contains(fileList)) {
+			fileLists.add(fileList);
+		}
+	}
+
+	/**
 	 * Create the array of commands to pass to rhino engine
 	 * 
 	 * @return a string[] of commands to pass to the rhino engine
@@ -149,7 +163,7 @@ public class JsDocToolkit extends Task {
 				cmdVector.add("-r=" + this.depth);
 			}
 			cmdVector.add(inputDir);
-		} else if (sources.size() != 0 || fileSets.size() != 0) {
+		} else if (sources.size() != 0 || fileSets.size() != 0 || fileLists.size() != 0) {
 			// Loop through sources
 			for (int i = 0; i < sources.size(); i++) {
 				// Get current source, and add it to the cmdVector
@@ -164,6 +178,21 @@ public class JsDocToolkit extends Task {
 				File dir = ds.getBasedir();
 				// Get included files from fileset
 				String[] srcs = ds.getIncludedFiles();
+				// Loop through files
+				for (int j = 0; j < srcs.length; j++) {
+					// Make file object from base directory and filename
+					File temp = new File(dir, srcs[j]);
+					// Call the JSMin class with this file
+					cmdVector.add(temp.getAbsolutePath());
+				}
+			}
+			// Loop through fileLists
+			for (int i = 0; i < fileLists.size(); i++) {
+				FileList fs = fileLists.elementAt(i);
+				// Get included files from filelist
+				String[] srcs = fs.getFiles(getProject());
+				// Get base directory from filelist
+				File dir = fs.getDir(getProject());
 				// Loop through files
 				for (int j = 0; j < srcs.length; j++) {
 					// Make file object from base directory and filename
