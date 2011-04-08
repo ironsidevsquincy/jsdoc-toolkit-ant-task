@@ -208,8 +208,8 @@ public class JsDocToolkit extends Task {
 		}
 		if (args.size() != 0) {
 			for (int i = 0; i < args.size(); i++) {
-				cmdVector.add("-D=\"" + args.elementAt(i).getName() + ":"
-						+ args.elementAt(i).getValue() + "\"");
+				cmdVector.add("-D=" + args.elementAt(i).getName() + ":"
+						+ args.elementAt(i).getValue());
 			}
 		}
 		// append -j argument, so it works with version 2

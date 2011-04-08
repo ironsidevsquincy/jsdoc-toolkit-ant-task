@@ -74,6 +74,14 @@
 			  <filelist dir="${integration.test.dir}" files="test.js" />
 		</jsdoctoolkit>
 
+  		<!-- test arguments -->
+  		<jsdoctoolkit jsdochome="${jsdoc.home}" 
+  			          template="jsdoc" 
+  			          outputdir="${report.dir}/testsix">
+  			  <source file="${integration.test.dir}/test.js" />
+  			  <arg name="copyright" value="TEST TEST TEST"/>
+  		</jsdoctoolkit>
+
 	</target>
 
 </project>
