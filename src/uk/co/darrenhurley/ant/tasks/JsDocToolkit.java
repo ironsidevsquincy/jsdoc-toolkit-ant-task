@@ -21,6 +21,7 @@ package uk.co.darrenhurley.ant.tasks;
 import org.apache.tools.ant.*;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
 import uk.co.darrenhurley.ant.types.*;
 import uk.co.darrenhurley.rhino.*;
 
@@ -37,6 +38,7 @@ public class JsDocToolkit extends Task {
 	private Vector<Arg> args = new Vector<Arg>();
 	private Vector<FileSet> fileSets = new Vector<FileSet>();
 	private Vector<FileList> fileLists = new Vector<FileList>();
+	private Vector<Path> paths = new Vector<Path>();
 	// optional properties
 	private String encoding = "UTF-8", extensions = "js", config = "",
 			log = "", inputDir = "";
@@ -108,6 +110,18 @@ public class JsDocToolkit extends Task {
 	}
 
 	/**
+	 * Receive a nested Path source from the ant task
+	 * 
+	 * @param path
+	 *            Returned from the native Path element
+	 */
+	public void addPath(Path path) {
+		if (!paths.contains(path)) {
+			paths.add(path);
+		}
+	}
+
+	/**
 	 * Create the array of commands to pass to rhino engine
 	 * 
 	 * @return a string[] of commands to pass to the rhino engine
@@ -163,7 +177,7 @@ public class JsDocToolkit extends Task {
 				cmdVector.add("-r=" + this.depth);
 			}
 			cmdVector.add(inputDir);
-		} else if (sources.size() != 0 || fileSets.size() != 0 || fileLists.size() != 0) {
+		} else if (sources.size() != 0 || fileSets.size() != 0 || fileLists.size() != 0 || paths.size() != 0) {
 			// Loop through sources
 			for (int i = 0; i < sources.size(); i++) {
 				// Get current source, and add it to the cmdVector
@@ -199,6 +213,14 @@ public class JsDocToolkit extends Task {
 					File temp = new File(dir, srcs[j]);
 					// Call the JSMin class with this file
 					cmdVector.add(temp.getAbsolutePath());
+				}
+			}
+			// Loop through paths
+			for (int i = 0; i < paths.size(); i++) {
+				Path path = paths.elementAt(i);
+				String[] srcs = path.list();
+				for(int j = 0; j < srcs.length; j++) {
+					cmdVector.add(srcs[j]);
 				}
 			}
 
