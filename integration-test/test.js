@@ -3,7 +3,6 @@
  *
  * @constructor
  */
- 
 function Test(foo){
     this.aTestProperty = foo;
 }

@@ -82,6 +82,14 @@
   			  <arg name="copyright" value="TEST TEST TEST"/>
   		</jsdoctoolkit>
 
+        <!-- multiple fileset elements test -->
+        <jsdoctoolkit jsdochome="${jsdoc.home}" 
+                      template="jsdoc" 
+                      outputdir="${report.dir}/testseven">
+            <fileset dir="${integration.test.dir}/js-one" />
+            <fileset dir="${integration.test.dir}/js-two" />
+        </jsdoctoolkit>
+
 	</target>
 
 </project>
